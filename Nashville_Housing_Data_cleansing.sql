@@ -46,12 +46,12 @@ set PropertySplitAddress = SUBSTRING_index(PropertyAddress, "," ,1 )
 Alter Table backuptable 
 ADD PropertySplitCity Nvarchar(255)
 
--checking the new columns 
+--checking the new columns 
 
 select PropertyAddress, PropertySplitAddress, PropertySplitCity
 from data_cleaning.backuptable
 
-#seperating OwnerAdress
+--seperating OwnerAdress
 
 select
 	OwnerAddress,
@@ -60,7 +60,7 @@ select
     SUBSTRING_index(OwnerAddress, "," ,-1 ) as OwnerSplitState
 From data_cleaning.backuptable
 
-#Add new columns 
+--Add new columns 
 
 Alter table data_cleaning.backuptable
 ADD	OwnerSplitAddress Nvarchar(255)
@@ -80,20 +80,20 @@ ADD	OwnerSplitState Nvarchar(255)
 UPDATE backuptable 
 Set OwnerSplitState = SUBSTRING_index(OwnerAddress, "," ,-1 )
 
-#checking results 
+--checking results 
 
 select OwnerAddress,OwnerSplitAddress,OwnerSplitCity, OwnerSplitState
 from data_cleaning.backuptable
 
-#changing Y and N to Yes and NO in SoldAsVacant
-#first checking which values SoldAsVacant is consisted of and how many raws each value have
+--changing Y and N to Yes and NO in SoldAsVacant
+--first checking which values SoldAsVacant is consisted of and how many raws each value have
 
 select distinct(SoldAsVacant),count(SoldAsVacant)
 from data_cleaning.backuptable 
 group by SoldAsVacant
 order by count(SoldAsVacant)
 
-#using case statement changing Y to YES and N to NO
+--using case statement changing Y to YES and N to NO
 
 select SoldAsVacant,
 CASE SoldAsVacant
@@ -103,7 +103,7 @@ CASE SoldAsVacant
     End as SoldAsVacantNew
 From data_cleaning.backuptable
 
-#updating SoldAsVacant column 
+--updating SoldAsVacant column 
 
 update backuptable
 set SoldAsVacant = CASE SoldAsVacant
@@ -112,15 +112,15 @@ set SoldAsVacant = CASE SoldAsVacant
     Else SoldAsVacant
     End;    
     
-#checking updated Column   
+--checking updated Column   
  
 select distinct(SoldAsVacant),count(SoldAsVacant)
 from data_cleaning.backuptable 
 group by SoldAsVacant
 order by count(SoldAsVacant)
 
-#remoting dublicates from table (not recommended if there is a unique data, valuable data can be deleted, 
-#just for analysis purposes we can neglect unique data - UniqueID and see other dublicates)
+--remoting dublicates from table (not recommended if there is a unique data, valuable data can be deleted, 
+--just for analysis purposes we can neglect unique data - UniqueID and see other dublicates)
 
 with Dublicate_table as (
 select *,
@@ -139,8 +139,8 @@ select *
 from dublicate_table 
 where row_num > 1				
 
-# 104 raws based on given criterias are dublicates (expect UniqueID) need to be deleted. 
-# As in table with created with "with" statement it saved as new CSV file (dublicate_deleting.csv) for further actions in it  
+--104 raws based on given criterias are dublicates (expect UniqueID) need to be deleted. 
+--As in table with created with "with" statement it saved as new CSV file (dublicate_deleting.csv) for further actions in it  
 
 with Dublicate_table as (
 select *,
@@ -160,10 +160,10 @@ Delete
 from data_cleaning.dublicate_deleting 
 where row_numbers > 1
 
-#104 dublicated raws has been deleted. 	
+--104 dublicated raws has been deleted. 	
  
 
-#Export cleaned CSV file for further use
+--Export cleaned CSV file for further use
 
 Select * 
 from data_cleaning.dublicate_deleting 
